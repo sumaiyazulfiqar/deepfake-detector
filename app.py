@@ -5,6 +5,15 @@ from PIL import Image
 import time
 from datetime import datetime
 import random
+import google.generativeai as genai
+import os
+
+# ============== GEMINI API SETUP ==============
+# Yahan apni API key daalo!
+GEMINI_API_KEY = "AIzaSyAVzi3XDARR1RtqLj1rS9cTbWKNMaQqIHU"  
+
+genai.configure(api_key=GEMINI_API_KEY)
+model = genai.GenerativeModel('gemini-pro')
 
 # ============== PAGE CONFIG ==============
 st.set_page_config(
@@ -35,7 +44,6 @@ st.markdown("""
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         margin-bottom: 0.5rem;
-        text-shadow: 0 0 30px rgba(233, 69, 96, 0.3);
     }
     
     .sub-title {
@@ -43,7 +51,6 @@ st.markdown("""
         color: #eaeaea;
         text-align: center;
         margin-bottom: 3rem;
-        opacity: 0.9;
     }
     
     .upload-container {
@@ -88,77 +95,42 @@ st.markdown("""
         box-shadow: 0 20px 40px rgba(235, 51, 73, 0.4);
     }
     
-    /* FLOATING FELIX BUTTON */
-    .felix-float {
+    /* FELIX CHATBOT STYLES */
+    .felix-chat-container {
         position: fixed;
-        bottom: 30px;
-        right: 30px;
+        bottom: 20px;
+        right: 20px;
         z-index: 9999;
-        animation: bounce 2s infinite;
-        cursor: pointer;
+        width: 380px;
     }
     
-    @keyframes bounce {
-        0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
-        40% {transform: translateY(-10px);}
-        60% {transform: translateY(-5px);}
-    }
-    
-    .felix-avatar {
-        width: 80px;
-        height: 80px;
+    .felix-avatar-btn {
+        width: 70px;
+        height: 70px;
         background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
         font-size: 2.5rem;
+        cursor: pointer;
         box-shadow: 0 10px 30px rgba(255, 107, 53, 0.5);
         border: 4px solid white;
-        transition: all 0.3s;
+        animation: bounce 2s infinite;
+        margin-left: auto;
     }
     
-    .felix-avatar:hover {
-        transform: scale(1.1);
-        box-shadow: 0 15px 40px rgba(255, 107, 53, 0.7);
+    @keyframes bounce {
+        0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+        40% {transform: translateY(-15px);}
+        60% {transform: translateY(-7px);}
     }
     
-    .felix-badge {
-        position: absolute;
-        top: -5px;
-        right: -5px;
-        background: #e94560;
-        color: white;
-        border-radius: 50%;
-        width: 25px;
-        height: 25px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 0.8rem;
-        font-weight: bold;
-        animation: pulse 1.5s infinite;
-    }
-    
-    @keyframes pulse {
-        0% { transform: scale(1); }
-        50% { transform: scale(1.2); }
-        100% { transform: scale(1); }
-    }
-    
-    /* CHAT WINDOW */
     .chat-window {
-        position: fixed;
-        bottom: 120px;
-        right: 30px;
-        width: 350px;
-        height: 450px;
         background: white;
         border-radius: 20px;
         box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-        z-index: 9998;
-        display: flex;
-        flex-direction: column;
+        margin-bottom: 15px;
         overflow: hidden;
         animation: slideUp 0.3s ease-out;
     }
@@ -171,167 +143,77 @@ st.markdown("""
     .chat-header {
         background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
         color: white;
-        padding: 15px 20px;
+        padding: 15px;
         display: flex;
         align-items: center;
         gap: 10px;
     }
     
-    .chat-avatar {
-        font-size: 2rem;
-    }
-    
-    .chat-title {
-        font-weight: 600;
-        font-size: 1.1rem;
-    }
-    
-    .chat-status {
-        font-size: 0.8rem;
-        opacity: 0.9;
-    }
-    
     .chat-messages {
-        flex: 1;
-        padding: 20px;
+        max-height: 300px;
         overflow-y: auto;
+        padding: 15px;
         background: #f8f9fa;
-    }
-    
-    .message {
-        margin-bottom: 15px;
-        display: flex;
-        align-items: flex-start;
-        gap: 10px;
-    }
-    
-    .message-avatar {
-        font-size: 1.5rem;
     }
     
     .message-bubble {
         background: white;
-        padding: 12px 16px;
+        padding: 12px;
         border-radius: 15px;
-        border-bottom-left-radius: 5px;
+        margin-bottom: 10px;
         box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         color: #333;
-        font-size: 0.95rem;
-        line-height: 1.4;
+    }
+    
+    .message-felix {
+        border-left: 4px solid #ff6b35;
     }
     
     .message-user {
-        flex-direction: row-reverse;
+        border-right: 4px solid #e94560;
+        text-align: right;
     }
     
-    .message-user .message-bubble {
-        background: #e94560;
-        color: white;
-        border-bottom-left-radius: 15px;
-        border-bottom-right-radius: 5px;
-    }
-    
-    .quick-replies {
-        padding: 15px;
-        background: white;
-        border-top: 1px solid #eee;
+    .quick-buttons {
+        padding: 10px;
         display: flex;
         flex-wrap: wrap;
         gap: 8px;
-    }
-    
-    .quick-btn {
-        background: #f0f0f0;
-        border: none;
-        padding: 8px 15px;
-        border-radius: 20px;
-        font-size: 0.85rem;
-        cursor: pointer;
-        transition: all 0.2s;
-        color: #333;
-    }
-    
-    .quick-btn:hover {
-        background: #e94560;
-        color: white;
-    }
-    
-    .chat-input {
-        padding: 15px;
         background: white;
-        border-top: 1px solid #eee;
-        display: flex;
-        gap: 10px;
     }
     
-    .chat-input input {
-        flex: 1;
-        border: 1px solid #ddd;
-        border-radius: 25px;
-        padding: 10px 20px;
-        outline: none;
-    }
-    
-    .chat-input button {
-        background: #e94560;
-        color: white;
-        border: none;
-        border-radius: 50%;
-        width: 40px;
-        height: 40px;
-        cursor: pointer;
-        font-size: 1.2rem;
-    }
-    
-    .close-btn {
-        position: absolute;
-        top: 15px;
-        right: 15px;
-        background: rgba(255,255,255,0.2);
-        border: none;
-        color: white;
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
-        cursor: pointer;
-        font-size: 1.2rem;
+    .download-btn {
+        background: linear-gradient(90deg, #667eea 0%, #764ba2 100%) !important;
+        color: white !important;
+        padding: 12px 30px !important;
+        border-radius: 25px !important;
+        font-weight: 600 !important;
     }
 </style>
 """, unsafe_allow_html=True)
 
-# ============== FELIX KNOWLEDGE BASE ==============
-FELIX_RESPONSES = {
-    "authentic": {
-        "greeting": "🎉 Great news! This image looks 100% authentic!",
-        "details": [
-            "Natural skin texture detected",
-            "Consistent lighting throughout",
-            "Camera noise pattern is normal",
-            "Facial proportions are natural"
-        ],
-        "tips": "This appears to be a genuine photograph with no manipulation."
-    },
-    "filtered": {
-        "greeting": "📸 I found something! This is a real person with some filters applied.",
-        "details": [
-            "Beauty filter detected (skin smoothing)",
-            "Possible eye enlargement",
-            "Color adjustments found",
-            "But facial structure is REAL"
-        ],
-        "tips": "The person is real, but they've used Instagram/Snapchat filters."
-    },
-    "fake": {
-        "greeting": "🚨 WARNING! This appears to be AI-generated or manipulated!",
-        "details": [
-            "Unnatural eye reflections",
-            "Inconsistent skin texture",
-            "Digital artifacts detected",
-            "Facial symmetry too perfect"
-        ],
-        "tips": "Do not trust this image. It shows signs of deepfake manipulation."
-    }
-}
+# ============== FELIX CHAT FUNCTION ==============
+def get_felix_reply(user_question, result_type, confidence, artifacts):
+    """Use Gemini API to generate Felix's reply"""
+    
+    context = f"""
+    You are Felix, a friendly forensic fox detective who helps users understand deepfake detection results.
+    Current analysis result: {result_type} with {confidence}% confidence.
+    Issues found: {', '.join(artifacts) if artifacts else 'None'}.
+    
+    User asked: {user_question}
+    
+    Reply in a friendly, helpful tone. Mix English and Roman Urdu.
+    Keep it short (2-3 sentences max).
+    Add relevant emojis.
+    """
+    
+    try:
+        response = model.generate_content(context)
+        return response.text
+    except:
+        # Fallback if API fails
+        return f"🦊 Mein check kar raha hoon... Result {result_type} hai with {confidence}% confidence!"
 
 # ============== DETECTOR CLASS ==============
 class DeepfakeDetector:
@@ -360,7 +242,7 @@ class DeepfakeDetector:
             results['artifacts'].append("No face detected")
             return results
         
-        # Simplified analysis
+        # Analysis
         blur = cv2.Laplacian(gray, cv2.CV_64F).var()
         noise = np.std(cv2.absdiff(gray, cv2.medianBlur(gray, 5)))
         
@@ -370,11 +252,11 @@ class DeepfakeDetector:
         elif blur < 50 or noise < 3:
             results['scores'] = {'natural': 10, 'filtered': 15, 'fake': 75}
             results['result_type'] = 'fake'
-            results['artifacts'] = ["Unnatural smoothness", "AI artifacts detected"]
+            results['artifacts'] = ["Unnatural smoothness", "AI artifacts detected", "Inconsistent lighting"]
         else:
             results['scores'] = {'natural': 65, 'filtered': 30, 'fake': 5}
             results['result_type'] = 'filtered'
-            results['artifacts'] = ["Beauty filter detected", "Minor adjustments found"]
+            results['artifacts'] = ["Beauty filter detected", "Skin smoothing applied", "Color adjustments found"]
         
         results['confidence'] = max(results['scores'].values())
         results['heatmap'] = self._generate_heatmap(opencv_image, faces, results['result_type'])
@@ -406,9 +288,11 @@ def main():
     # Session state
     if 'analyzed' not in st.session_state:
         st.session_state.analyzed = False
-        st.session_state.chat_open = False
-        st.session_state.messages = []
-        st.session_state.result_type = None
+        st.session_state.chat_open = True  # Auto open
+        st.session_state.messages = [
+            {"sender": "felix", "text": "Hi! I'm Felix! 🦊 Upload an image and I'll check if it's real or fake!"}
+        ]
+        st.session_state.result_data = None
     
     # Main content
     col1, col2, col3 = st.columns([1, 3, 1])
@@ -422,7 +306,7 @@ def main():
         if uploaded_file:
             image = Image.open(uploaded_file)
             
-            if st.button("🔍 START ANALYSIS", use_container_width=True):
+            if st.button("🔍 START FORENSIC ANALYSIS", use_container_width=True):
                 # Progress
                 progress = st.progress(0)
                 for i in range(0, 101, 20):
@@ -433,18 +317,19 @@ def main():
                 # Analyze
                 results = detector.analyze(image)
                 st.session_state.analyzed = True
-                st.session_state.result_type = results['result_type']
-                st.session_state.last_results = results
+                st.session_state.result_data = results
                 
-                # Show result
-                felix_data = FELIX_RESPONSES[results['result_type']]
+                # Add Felix message
+                result_msg = f"Analysis complete! 🎯 Result: {results['result_type'].upper()} with {results['confidence']}% confidence!"
+                st.session_state.messages.append({"sender": "felix", "text": result_msg})
                 
+                # Show result card
                 if results['result_type'] == 'authentic':
                     st.markdown(f"""
                     <div class="result-authentic">
                         <h1>✅</h1>
                         <h2>{results['confidence']}% AUTHENTIC</h2>
-                        <p>{felix_data['greeting']}</p>
+                        <p>This image appears to be genuine!</p>
                     </div>
                     """, unsafe_allow_html=True)
                 elif results['result_type'] == 'filtered':
@@ -452,7 +337,7 @@ def main():
                     <div class="result-filtered">
                         <h1>⚠️</h1>
                         <h2>{results['confidence']}% FILTERED</h2>
-                        <p>{felix_data['greeting']}</p>
+                        <p>Real person with beauty filters!</p>
                     </div>
                     """, unsafe_allow_html=True)
                 else:
@@ -460,7 +345,7 @@ def main():
                     <div class="result-fake">
                         <h1>🚨</h1>
                         <h2>{results['confidence']}% FAKE</h2>
-                        <p>{felix_data['greeting']}</p>
+                        <p>AI-generated or manipulated!</p>
                     </div>
                     """, unsafe_allow_html=True)
                 
@@ -470,7 +355,7 @@ def main():
                     st.image(image, caption="Original", use_column_width=True)
                 with col_img2:
                     if results['heatmap'] is not None:
-                        st.image(results['heatmap'], caption="Analysis", use_column_width=True)
+                        st.image(results['heatmap'], caption="Forensic Analysis", use_column_width=True)
                 
                 # Metrics
                 st.markdown("### 📊 Detailed Scores")
@@ -479,74 +364,97 @@ def main():
                 mcol2.metric("🟡 Filtered", f"{results['scores']['filtered']}%")
                 mcol3.metric("🔴 Fake", f"{results['scores']['fake']}%")
                 
-                # Auto-open Felix chat
-                st.session_state.chat_open = True
-                st.session_state.messages = [
-                    {"sender": "felix", "text": felix_data['greeting']},
-                    {"sender": "felix", "text": "Ask me anything about this analysis! 🕵️"}
-                ]
+                # Download button
+                report = f"""
+DEEPFAKE DETECTION REPORT
+Generated: {datetime.now()}
+Result: {results['result_type'].upper()}
+Confidence: {results['confidence']}%
+
+Scores:
+- Natural: {results['scores']['natural']}%
+- Filtered: {results['scores']['filtered']}%
+- Fake: {results['scores']['fake']}%
+
+Issues:
+{chr(10).join('- ' + a for a in results['artifacts'])}
+
+Analyzed by: Felix the Forensic Fox 🦊
+"""
+                st.download_button("📥 DOWNLOAD REPORT", report, 
+                                 f"felix_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt",
+                                 use_container_width=True)
     
-    # ============== FLOATING FELIX CHATBOT ==============
-    
-    # Floating button
-    if st.session_state.analyzed:
-        col_float = st.columns([6, 1])
-        with col_float[1]:
-            if st.button("🦊", key="felix_btn", help="Ask Felix!"):
-                st.session_state.chat_open = not st.session_state.chat_open
-                st.rerun()
+    # ============== FELIX CHATBOT ==============
+    st.markdown("---")
+    st.markdown("### 🦊 Chat with Felix")
     
     # Chat window
-    if st.session_state.analyzed and st.session_state.chat_open:
-        st.markdown("### 🦊 Chat with Felix")
+    chat_container = st.container()
+    
+    with chat_container:
+        # Show messages
+        for msg in st.session_state.messages[-6:]:  # Last 6 messages
+            if msg['sender'] == 'felix':
+                st.markdown(f"""
+                <div class="message-bubble message-felix">
+                    <strong>🦊 Felix:</strong> {msg['text']}
+                </div>
+                """, unsafe_allow_html=True)
+            else:
+                st.markdown(f"""
+                <div class="message-bubble message-user">
+                    <strong>You:</strong> {msg['text']}
+                </div>
+                """, unsafe_allow_html=True)
         
-        # Chat container
-        chat_container = st.container()
+        # Quick buttons (only after analysis)
+        if st.session_state.analyzed and st.session_state.result_data:
+            results = st.session_state.result_data
+            
+            cols = st.columns(2)
+            with cols[0]:
+                if st.button("🔍 Why this result?", key="why"):
+                    reply = get_felix_reply("Why this result?", results['result_type'], 
+                                          results['confidence'], results['artifacts'])
+                    st.session_state.messages.append({"sender": "user", "text": "Why this result?"})
+                    st.session_state.messages.append({"sender": "felix", "text": reply})
+                    st.rerun()
+            
+            with cols[1]:
+                if st.button("💡 Tell me more", key="more"):
+                    reply = get_felix_reply("Explain the issues found", results['result_type'], 
+                                          results['confidence'], results['artifacts'])
+                    st.session_state.messages.append({"sender": "user", "text": "Tell me more"})
+                    st.session_state.messages.append({"sender": "felix", "text": reply})
+                    st.rerun()
+            
+            cols2 = st.columns(2)
+            with cols2[0]:
+                if st.button("❓ Is this person real?", key="real"):
+                    reply = get_felix_reply("Is this person real?", results['result_type'], 
+                                          results['confidence'], results['artifacts'])
+                    st.session_state.messages.append({"sender": "user", "text": "Is this person real?"})
+                    st.session_state.messages.append({"sender": "felix", "text": reply})
+                    st.rerun()
+            
+            with cols2[1]:
+                if st.button("✅ Can I trust this?", key="trust"):
+                    reply = get_felix_reply("Can I trust this image?", results['result_type'], 
+                                          results['confidence'], results['artifacts'])
+                    st.session_state.messages.append({"sender": "user", "text": "Can I trust this?"})
+                    st.session_state.messages.append({"sender": "felix", "text": reply})
+                    st.rerun()
         
-        with chat_container:
-            # Show messages
-            for msg in st.session_state.messages:
-                if msg['sender'] == 'felix':
-                    st.markdown(f"**🦊 Felix:** {msg['text']}")
-                else:
-                    st.markdown(f"**You:** {msg['text']}")
-            
-            # Quick replies
-            if st.session_state.result_type:
-                felix_info = FELIX_RESPONSES[st.session_state.result_type]
-                
-                cols = st.columns(2)
-                with cols[0]:
-                    if st.button("🔍 Why this result?", key="why"):
-                        details = "\n".join([f"• {d}" for d in felix_info['details']])
-                        st.session_state.messages.append({"sender": "user", "text": "Why this result?"})
-                        st.session_state.messages.append({"sender": "felix", "text": f"Here's what I found:\n\n{details}"})
-                        st.rerun()
-                
-                with cols[1]:
-                    if st.button("💡 Tips", key="tips"):
-                        st.session_state.messages.append({"sender": "user", "text": "Any tips?"})
-                        st.session_state.messages.append({"sender": "felix", "text": felix_info['tips']})
-                        st.rerun()
-                
-                cols2 = st.columns(2)
-                with cols2[0]:
-                    if st.button("❓ Is this person real?", key="real"):
-                        answer = "Yes! This is a real person." if st.session_state.result_type != 'fake' else "No, this appears to be AI-generated."
-                        st.session_state.messages.append({"sender": "user", "text": "Is this person real?"})
-                        st.session_state.messages.append({"sender": "felix", "text": answer})
-                        st.rerun()
-                
-                with cols2[1]:
-                    if st.button("✅ Can I trust this?", key="trust"):
-                        trust_level = "High trust!" if st.session_state.result_type == 'authentic' else "Be cautious!" if st.session_state.result_type == 'filtered' else "Do NOT trust!"
-                        st.session_state.messages.append({"sender": "user", "text": "Can I trust this?"})
-                        st.session_state.messages.append({"sender": "felix", "text": f"{trust_level} {felix_info['tips']}"})
-                        st.rerun()
-            
-            # Close button
-            if st.button("❌ Close Chat", key="close_chat"):
-                st.session_state.chat_open = False
+        # Custom input
+        user_input = st.text_input("Or type your question:", key="user_question")
+        if user_input and st.session_state.result_data:
+            if st.button("Send", key="send"):
+                results = st.session_state.result_data
+                reply = get_felix_reply(user_input, results['result_type'], 
+                                      results['confidence'], results['artifacts'])
+                st.session_state.messages.append({"sender": "user", "text": user_input})
+                st.session_state.messages.append({"sender": "felix", "text": reply})
                 st.rerun()
 
 if __name__ == "__main__":
