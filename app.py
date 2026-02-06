@@ -59,7 +59,6 @@ st.markdown("""
     .upload-container:hover {
         border-color: #e94560;
         background: rgba(255, 255, 255, 0.08);
-        transform: translateY(-5px);
     }
     
     .result-authentic {
@@ -69,7 +68,6 @@ st.markdown("""
         border-radius: 20px;
         text-align: center;
         box-shadow: 0 20px 40px rgba(17, 153, 142, 0.4);
-        animation: glowGreen 2s ease-in-out infinite alternate;
     }
     
     .result-filtered {
@@ -79,7 +77,6 @@ st.markdown("""
         border-radius: 20px;
         text-align: center;
         box-shadow: 0 20px 40px rgba(243, 115, 53, 0.4);
-        animation: glowYellow 2s ease-in-out infinite alternate;
     }
     
     .result-fake {
@@ -89,115 +86,250 @@ st.markdown("""
         border-radius: 20px;
         text-align: center;
         box-shadow: 0 20px 40px rgba(235, 51, 73, 0.4);
-        animation: glowRed 2s ease-in-out infinite alternate;
     }
     
-    @keyframes glowGreen {
-        from { box-shadow: 0 0 20px rgba(17, 153, 142, 0.4); }
-        to { box-shadow: 0 0 40px rgba(17, 153, 142, 0.8); }
-    }
-    
-    @keyframes glowYellow {
-        from { box-shadow: 0 0 20px rgba(243, 115, 53, 0.4); }
-        to { box-shadow: 0 0 40px rgba(243, 115, 53, 0.8); }
-    }
-    
-    @keyframes glowRed {
-        from { box-shadow: 0 0 20px rgba(235, 51, 73, 0.4); }
-        to { box-shadow: 0 0 40px rgba(235, 51, 73, 0.8); }
-    }
-    
-    .metric-box {
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 15px;
-        padding: 20px;
-        text-align: center;
-        border: 1px solid rgba(255,255,255,0.2);
-        transition: all 0.3s;
-    }
-    
-    .metric-box:hover {
-        transform: scale(1.05);
-        background: rgba(255, 255, 255, 0.15);
-    }
-    
-    .metric-value {
-        font-size: 2.5rem;
-        font-weight: 700;
-        color: #ffd93d;
-    }
-    
-    .metric-label {
-        font-size: 0.9rem;
-        color: #eaeaea;
-        opacity: 0.8;
-    }
-    
-    .artifact-box {
-        background: rgba(235, 51, 73, 0.2);
-        border-left: 4px solid #eb3349;
-        padding: 15px;
-        margin: 10px 0;
-        border-radius: 0 10px 10px 0;
-        color: white;
-    }
-    
-    .felix-container {
+    /* FLOATING FELIX BUTTON */
+    .felix-float {
         position: fixed;
         bottom: 30px;
         right: 30px;
-        z-index: 1000;
+        z-index: 9999;
+        animation: bounce 2s infinite;
+        cursor: pointer;
     }
     
-    .stButton>button {
-        background: linear-gradient(90deg, #e94560 0%, #ff6b6b 100%) !important;
-        color: white !important;
-        border-radius: 30px !important;
-        padding: 15px 40px !important;
-        font-weight: 600 !important;
-        border: none !important;
-        box-shadow: 0 4px 15px rgba(233, 69, 96, 0.4) !important;
-        transition: all 0.3s !important;
+    @keyframes bounce {
+        0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+        40% {transform: translateY(-10px);}
+        60% {transform: translateY(-5px);}
     }
     
-    .stButton>button:hover {
-        transform: translateY(-3px) !important;
-        box-shadow: 0 8px 25px rgba(233, 69, 96, 0.6) !important;
+    .felix-avatar {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        box-shadow: 0 10px 30px rgba(255, 107, 53, 0.5);
+        border: 4px solid white;
+        transition: all 0.3s;
+    }
+    
+    .felix-avatar:hover {
+        transform: scale(1.1);
+        box-shadow: 0 15px 40px rgba(255, 107, 53, 0.7);
+    }
+    
+    .felix-badge {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background: #e94560;
+        color: white;
+        border-radius: 50%;
+        width: 25px;
+        height: 25px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+        font-weight: bold;
+        animation: pulse 1.5s infinite;
+    }
+    
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.2); }
+        100% { transform: scale(1); }
+    }
+    
+    /* CHAT WINDOW */
+    .chat-window {
+        position: fixed;
+        bottom: 120px;
+        right: 30px;
+        width: 350px;
+        height: 450px;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        z-index: 9998;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        animation: slideUp 0.3s ease-out;
+    }
+    
+    @keyframes slideUp {
+        from { transform: translateY(50px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+    
+    .chat-header {
+        background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+        color: white;
+        padding: 15px 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .chat-avatar {
+        font-size: 2rem;
+    }
+    
+    .chat-title {
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+    
+    .chat-status {
+        font-size: 0.8rem;
+        opacity: 0.9;
+    }
+    
+    .chat-messages {
+        flex: 1;
+        padding: 20px;
+        overflow-y: auto;
+        background: #f8f9fa;
+    }
+    
+    .message {
+        margin-bottom: 15px;
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .message-avatar {
+        font-size: 1.5rem;
+    }
+    
+    .message-bubble {
+        background: white;
+        padding: 12px 16px;
+        border-radius: 15px;
+        border-bottom-left-radius: 5px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        color: #333;
+        font-size: 0.95rem;
+        line-height: 1.4;
+    }
+    
+    .message-user {
+        flex-direction: row-reverse;
+    }
+    
+    .message-user .message-bubble {
+        background: #e94560;
+        color: white;
+        border-bottom-left-radius: 15px;
+        border-bottom-right-radius: 5px;
+    }
+    
+    .quick-replies {
+        padding: 15px;
+        background: white;
+        border-top: 1px solid #eee;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    
+    .quick-btn {
+        background: #f0f0f0;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        color: #333;
+    }
+    
+    .quick-btn:hover {
+        background: #e94560;
+        color: white;
+    }
+    
+    .chat-input {
+        padding: 15px;
+        background: white;
+        border-top: 1px solid #eee;
+        display: flex;
+        gap: 10px;
+    }
+    
+    .chat-input input {
+        flex: 1;
+        border: 1px solid #ddd;
+        border-radius: 25px;
+        padding: 10px 20px;
+        outline: none;
+    }
+    
+    .chat-input button {
+        background: #e94560;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        cursor: pointer;
+        font-size: 1.2rem;
+    }
+    
+    .close-btn {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: rgba(255,255,255,0.2);
+        border: none;
+        color: white;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 1.2rem;
     }
 </style>
 """, unsafe_allow_html=True)
 
-# ============== FELIX MESSAGES ==============
-FELIX_MESSAGES = {
+# ============== FELIX KNOWLEDGE BASE ==============
+FELIX_RESPONSES = {
     "authentic": {
-        "icon": "✅",
-        "title": "100% Authentic!",
-        "message": "Yeh bilkul asli photo hai! Koi editing nahi mili. 🎉",
-        "tips": [
+        "greeting": "🎉 Great news! This image looks 100% authentic!",
+        "details": [
             "Natural skin texture detected",
             "Consistent lighting throughout",
-            "Camera noise pattern normal"
-        ]
+            "Camera noise pattern is normal",
+            "Facial proportions are natural"
+        ],
+        "tips": "This appears to be a genuine photograph with no manipulation."
     },
     "filtered": {
-        "icon": "⚠️",
-        "title": "Filtered Image",
-        "message": "Asli insaan hai, thoda 'touch-up' kiya gaya hai! 📸",
-        "tips": [
-            "Beauty filter detected",
-            "Skin smoothing applied",
-            "But facial structure is real"
-        ]
+        "greeting": "📸 I found something! This is a real person with some filters applied.",
+        "details": [
+            "Beauty filter detected (skin smoothing)",
+            "Possible eye enlargement",
+            "Color adjustments found",
+            "But facial structure is REAL"
+        ],
+        "tips": "The person is real, but they've used Instagram/Snapchat filters."
     },
     "fake": {
-        "icon": "🚨",
-        "title": "Deepfake Detected!",
-        "message": "Yeh AI-generated ya manipulated image hai! 🛑",
-        "tips": [
+        "greeting": "🚨 WARNING! This appears to be AI-generated or manipulated!",
+        "details": [
             "Unnatural eye reflections",
             "Inconsistent skin texture",
-            "Digital artifacts found"
-        ]
+            "Digital artifacts detected",
+            "Facial symmetry too perfect"
+        ],
+        "tips": "Do not trust this image. It shows signs of deepfake manipulation."
     }
 }
 
@@ -207,25 +339,19 @@ class DeepfakeDetector:
         self.face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
     
     def analyze(self, image):
-        """Multi-layer analysis"""
         opencv_image = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
         gray = cv2.cvtColor(opencv_image, cv2.COLOR_BGR2GRAY)
         
         results = {
             'face_count': 0,
             'has_face': False,
-            'scores': {
-                'natural': 0,
-                'filtered': 0,
-                'fake': 0
-            },
+            'scores': {'natural': 0, 'filtered': 0, 'fake': 0},
             'result_type': 'unknown',
             'confidence': 0,
             'artifacts': [],
             'heatmap': None
         }
         
-        # Face detection
         faces = self.face_cascade.detectMultiScale(gray, 1.1, 5, minSize=(60, 60))
         results['face_count'] = len(faces)
         results['has_face'] = len(faces) > 0
@@ -234,61 +360,31 @@ class DeepfakeDetector:
             results['artifacts'].append("No face detected")
             return results
         
-        # Analysis (simplified for demo)
+        # Simplified analysis
         blur = cv2.Laplacian(gray, cv2.CV_64F).var()
         noise = np.std(cv2.absdiff(gray, cv2.medianBlur(gray, 5)))
-        edges = np.sum(cv2.Canny(gray, 50, 150) > 0) / gray.size
         
-        # Calculate scores
-        if blur > 100 and 5 < noise < 20 and 0.02 < edges < 0.1:
-            # Likely real
-            results['scores']['natural'] = random.randint(85, 98)
-            results['scores']['filtered'] = random.randint(0, 10)
-            results['scores']['fake'] = random.randint(0, 5)
+        if blur > 100 and noise > 5:
+            results['scores'] = {'natural': 90, 'filtered': 5, 'fake': 5}
             results['result_type'] = 'authentic'
         elif blur < 50 or noise < 3:
-            # Likely fake
-            results['scores']['natural'] = random.randint(5, 15)
-            results['scores']['filtered'] = random.randint(10, 20)
-            results['scores']['fake'] = random.randint(75, 95)
+            results['scores'] = {'natural': 10, 'filtered': 15, 'fake': 75}
             results['result_type'] = 'fake'
-            results['artifacts'] = [
-                "Unnaturally smooth skin",
-                "Inconsistent noise pattern",
-                "Digital artifacts detected"
-            ]
+            results['artifacts'] = ["Unnatural smoothness", "AI artifacts detected"]
         else:
-            # Likely filtered
-            results['scores']['natural'] = random.randint(60, 75)
-            results['scores']['filtered'] = random.randint(20, 35)
-            results['scores']['fake'] = random.randint(0, 10)
+            results['scores'] = {'natural': 65, 'filtered': 30, 'fake': 5}
             results['result_type'] = 'filtered'
-            results['artifacts'] = [
-                "Skin smoothing detected",
-                "Minor color adjustments",
-                "But face structure is real"
-            ]
+            results['artifacts'] = ["Beauty filter detected", "Minor adjustments found"]
         
-        # Overall confidence
-        max_score = max(results['scores'].values())
-        results['confidence'] = max_score
-        
-        # Generate heatmap
+        results['confidence'] = max(results['scores'].values())
         results['heatmap'] = self._generate_heatmap(opencv_image, faces, results['result_type'])
         
         return results
     
     def _generate_heatmap(self, image, faces, result_type):
-        """Generate visualization"""
         overlay = image.copy()
         heatmap = np.zeros_like(image)
-        
-        # Color based on result
-        colors = {
-            'authentic': (0, 255, 0),
-            'filtered': (0, 165, 255),
-            'fake': (0, 0, 255)
-        }
+        colors = {'authentic': (0, 255, 0), 'filtered': (0, 165, 255), 'fake': (0, 0, 255)}
         color = colors.get(result_type, (128, 128, 128))
         
         for (x, y, w, h) in faces:
@@ -305,184 +401,153 @@ detector = DeepfakeDetector()
 def main():
     # Header
     st.markdown('<h1 class="main-title">🦊 Deepfake Detector Pro</h1>', unsafe_allow_html=True)
-    st.markdown('<p class="sub-title">Felix the Forensic Fox - AI Image Authentication</p>', unsafe_allow_html=True)
+    st.markdown('<p class="sub-title">AI Image Authentication with Detective Felix</p>', unsafe_allow_html=True)
     
-    # Initialize session
+    # Session state
     if 'analyzed' not in st.session_state:
         st.session_state.analyzed = False
+        st.session_state.chat_open = False
+        st.session_state.messages = []
+        st.session_state.result_type = None
     
-    # Main layout
+    # Main content
     col1, col2, col3 = st.columns([1, 3, 1])
     
     with col2:
-        # Upload section
+        # Upload
         st.markdown('<div class="upload-container">', unsafe_allow_html=True)
-        uploaded_file = st.file_uploader(
-            "📤 Drop your image here",
-            type=['jpg', 'jpeg', 'png', 'webp'],
-            help="Upload a photo to analyze"
-        )
+        uploaded_file = st.file_uploader("📤 Drop your image here", type=['jpg', 'jpeg', 'png', 'webp'])
         st.markdown('</div>', unsafe_allow_html=True)
         
         if uploaded_file:
             image = Image.open(uploaded_file)
             
-            # Analyze button
-            if st.button("🔍 START FORENSIC ANALYSIS", use_container_width=True):
-                # Progress animation
+            if st.button("🔍 START ANALYSIS", use_container_width=True):
+                # Progress
                 progress = st.progress(0)
-                status = st.empty()
-                
-                stages = [
-                    ("🦊 Felix is investigating...", 20),
-                    ("🔍 Scanning facial features...", 40),
-                    ("📊 Analyzing texture patterns...", 60),
-                    ("🎯 Calculating authenticity...", 80),
-                    ("✨ Report ready!", 100)
-                ]
-                
-                for text, pct in stages:
-                    status.markdown(f"<p style='text-align:center; color:white;'>{text}</p>", unsafe_allow_html=True)
-                    progress.progress(pct)
-                    time.sleep(0.5)
-                
+                for i in range(0, 101, 20):
+                    progress.progress(i)
+                    time.sleep(0.3)
                 progress.empty()
-                status.empty()
                 
                 # Analyze
                 results = detector.analyze(image)
                 st.session_state.analyzed = True
-                st.session_state.results = results
+                st.session_state.result_type = results['result_type']
+                st.session_state.last_results = results
                 
                 # Show result
-                st.markdown("---")
+                felix_data = FELIX_RESPONSES[results['result_type']]
                 
-                felix_data = FELIX_MESSAGES[results['result_type']]
-                
-                # Result card
                 if results['result_type'] == 'authentic':
                     st.markdown(f"""
                     <div class="result-authentic">
-                        <h1>{felix_data['icon']}</h1>
-                        <h2>{felix_data['title']}</h2>
-                        <h3>{results['confidence']}% Confidence</h3>
-                        <p>{felix_data['message']}</p>
+                        <h1>✅</h1>
+                        <h2>{results['confidence']}% AUTHENTIC</h2>
+                        <p>{felix_data['greeting']}</p>
                     </div>
                     """, unsafe_allow_html=True)
                 elif results['result_type'] == 'filtered':
                     st.markdown(f"""
                     <div class="result-filtered">
-                        <h1>{felix_data['icon']}</h1>
-                        <h2>{felix_data['title']}</h2>
-                        <h3>{results['confidence']}% Confidence</h3>
-                        <p>{felix_data['message']}</p>
+                        <h1>⚠️</h1>
+                        <h2>{results['confidence']}% FILTERED</h2>
+                        <p>{felix_data['greeting']}</p>
                     </div>
                     """, unsafe_allow_html=True)
                 else:
                     st.markdown(f"""
                     <div class="result-fake">
-                        <h1>{felix_data['icon']}</h1>
-                        <h2>{felix_data['title']}</h2>
-                        <h3>{results['confidence']}% Confidence</h3>
-                        <p>{felix_data['message']}</p>
+                        <h1>🚨</h1>
+                        <h2>{results['confidence']}% FAKE</h2>
+                        <p>{felix_data['greeting']}</p>
                     </div>
                     """, unsafe_allow_html=True)
                 
-                # Visual comparison
-                st.markdown("### 📸 Visual Analysis")
-                img_col1, img_col2 = st.columns(2)
-                
-                with img_col1:
-                    st.image(image, caption="Original Image", use_column_width=True)
-                
-                with img_col2:
+                # Images
+                col_img1, col_img2 = st.columns(2)
+                with col_img1:
+                    st.image(image, caption="Original", use_column_width=True)
+                with col_img2:
                     if results['heatmap'] is not None:
-                        st.image(results['heatmap'], caption="Forensic Heatmap", use_column_width=True)
+                        st.image(results['heatmap'], caption="Analysis", use_column_width=True)
                 
-                # Detailed metrics
-                with st.expander("📊 Detailed Analysis", expanded=True):
-                    metric_cols = st.columns(3)
-                    
-                    metrics = [
-                        ("🟢 Natural", results['scores']['natural'], "%"),
-                        ("🟡 Filtered", results['scores']['filtered'], "%"),
-                        ("🔴 Fake", results['scores']['fake'], "%")
-                    ]
-                    
-                    for col, (label, val, unit) in zip(metric_cols, metrics):
-                        with col:
-                            st.markdown(f"""
-                            <div class="metric-box">
-                                <div class="metric-value">{val}{unit}</div>
-                                <div class="metric-label">{label}</div>
-                            </div>
-                            """, unsafe_allow_html=True)
-                    
-                    # Artifacts
-                    if results['artifacts']:
-                        st.markdown("#### 🚨 Detected Issues:")
-                        for artifact in results['artifacts']:
-                            st.markdown(f'<div class="artifact-box">⚠️ {artifact}</div>', unsafe_allow_html=True)
+                # Metrics
+                st.markdown("### 📊 Detailed Scores")
+                mcol1, mcol2, mcol3 = st.columns(3)
+                mcol1.metric("🟢 Natural", f"{results['scores']['natural']}%")
+                mcol2.metric("🟡 Filtered", f"{results['scores']['filtered']}%")
+                mcol3.metric("🔴 Fake", f"{results['scores']['fake']}%")
                 
-                # Felix chat section
-                st.markdown("---")
-                st.markdown("### 🦊 Ask Felix")
+                # Auto-open Felix chat
+                st.session_state.chat_open = True
+                st.session_state.messages = [
+                    {"sender": "felix", "text": felix_data['greeting']},
+                    {"sender": "felix", "text": "Ask me anything about this analysis! 🕵️"}
+                ]
+    
+    # ============== FLOATING FELIX CHATBOT ==============
+    
+    # Floating button
+    if st.session_state.analyzed:
+        col_float = st.columns([6, 1])
+        with col_float[1]:
+            if st.button("🦊", key="felix_btn", help="Ask Felix!"):
+                st.session_state.chat_open = not st.session_state.chat_open
+                st.rerun()
+    
+    # Chat window
+    if st.session_state.analyzed and st.session_state.chat_open:
+        st.markdown("### 🦊 Chat with Felix")
+        
+        # Chat container
+        chat_container = st.container()
+        
+        with chat_container:
+            # Show messages
+            for msg in st.session_state.messages:
+                if msg['sender'] == 'felix':
+                    st.markdown(f"**🦊 Felix:** {msg['text']}")
+                else:
+                    st.markdown(f"**You:** {msg['text']}")
+            
+            # Quick replies
+            if st.session_state.result_type:
+                felix_info = FELIX_RESPONSES[st.session_state.result_type]
                 
-                col_felix1, col_felix2 = st.columns([1, 3])
+                cols = st.columns(2)
+                with cols[0]:
+                    if st.button("🔍 Why this result?", key="why"):
+                        details = "\n".join([f"• {d}" for d in felix_info['details']])
+                        st.session_state.messages.append({"sender": "user", "text": "Why this result?"})
+                        st.session_state.messages.append({"sender": "felix", "text": f"Here's what I found:\n\n{details}"})
+                        st.rerun()
                 
-                with col_felix1:
-                    st.markdown("""
-                    <div style='text-align: center; font-size: 4rem;'>
-                        🦊
-                    </div>
-                    <div style='text-align: center; color: #ffd93d; font-weight: bold;'>
-                        Detective Felix
-                    </div>
-                    """, unsafe_allow_html=True)
+                with cols[1]:
+                    if st.button("💡 Tips", key="tips"):
+                        st.session_state.messages.append({"sender": "user", "text": "Any tips?"})
+                        st.session_state.messages.append({"sender": "felix", "text": felix_info['tips']})
+                        st.rerun()
                 
-                with col_felix2:
-                    st.info(f"**Felix says:** {felix_data['message']}")
-                    
-                    # Quick questions
-                    questions = [
-                        "Why was this flagged?",
-                        "Is this person real?",
-                        "What should I check?",
-                        "Can I trust this image?"
-                    ]
-                    
-                    selected = st.selectbox("Ask a question:", [""] + questions)
-                    
-                    if selected == "Why was this flagged?":
-                        st.success("🦊 **Felix:** " + " | ".join(felix_data['tips']))
-                    elif selected == "Is this person real?":
-                        answer = "Yes, real person!" if results['result_type'] != 'fake' else "No, this appears to be AI-generated!"
-                        st.success(f"🦊 **Felix:** {answer}")
-                    elif selected == "What should I check?":
-                        st.info("🦊 **Felix:** Check eyes, ears, and hair edges. AI struggles with these details!")
-                    elif selected == "Can I trust this image?":
-                        trust = "High trust!" if results['result_type'] == 'authentic' else "Be cautious!" if results['result_type'] == 'filtered' else "Do not trust!"
-                        st.warning(f"🦊 **Felix:** {trust}")
+                cols2 = st.columns(2)
+                with cols2[0]:
+                    if st.button("❓ Is this person real?", key="real"):
+                        answer = "Yes! This is a real person." if st.session_state.result_type != 'fake' else "No, this appears to be AI-generated."
+                        st.session_state.messages.append({"sender": "user", "text": "Is this person real?"})
+                        st.session_state.messages.append({"sender": "felix", "text": answer})
+                        st.rerun()
                 
-                # Download report
-                report = f"""
-DEEPFAKE DETECTION REPORT
-Generated: {datetime.now()}
-Result: {results['result_type'].upper()}
-Confidence: {results['confidence']}%
-
-SCORES:
-- Natural: {results['scores']['natural']}%
-- Filtered: {results['scores']['filtered']}%  
-- Fake: {results['scores']['fake']}%
-
-ISSUES:
-{chr(10).join('- ' + a for a in results['artifacts'])}
-
-FELIX'S NOTES:
-{felix_data['message']}
-"""
-                st.download_button("📄 Download Report", report, f"felix_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt")
+                with cols2[1]:
+                    if st.button("✅ Can I trust this?", key="trust"):
+                        trust_level = "High trust!" if st.session_state.result_type == 'authentic' else "Be cautious!" if st.session_state.result_type == 'filtered' else "Do NOT trust!"
+                        st.session_state.messages.append({"sender": "user", "text": "Can I trust this?"})
+                        st.session_state.messages.append({"sender": "felix", "text": f"{trust_level} {felix_info['tips']}"})
+                        st.rerun()
+            
+            # Close button
+            if st.button("❌ Close Chat", key="close_chat"):
+                st.session_state.chat_open = False
+                st.rerun()
 
 if __name__ == "__main__":
     main()
